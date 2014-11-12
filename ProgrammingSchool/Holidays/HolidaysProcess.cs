@@ -5,8 +5,14 @@ namespace Holidays
 {
     public class HolidaysProcess: IHolidaysProcess
     {
+        private readonly INotifier notifier;
+
+        public HolidaysProcess(INotifyPolicy notifyPolicy)
+        {
+            notifier = notifyPolicy.CreateNotifier();
+        }
+
         public string HREmailAddress;
-        public INotifier Notifier;
 
         public void RegisterHolidayRequest(HolidayRequest request)
         {
@@ -22,7 +28,7 @@ namespace Holidays
                                 req.ManagerName, req.From.ToShortDateString(), req.To.ToShortDateString());
             var body = "";
 
-            Notifier.Notify(req.ManagerEmail, req.EmployeeEmail, subject, body);
+            notifier.Notify(req.ManagerEmail, req.EmployeeEmail, subject, body);
         }
 
         private void OnRequestAccepted(object r, EventArgs e)
@@ -32,7 +38,7 @@ namespace Holidays
                                 req.ManagerName, req.EmployeeName, req.From.ToShortDateString(), req.To.ToShortDateString());
             var body = "";
 
-            Notifier.Notify(req.ManagerEmail, HREmailAddress, subject, body);
+            notifier.Notify(req.ManagerEmail, HREmailAddress, subject, body);
         }
 
         private void OnRequestSubmitted(object r, EventArgs e)
@@ -42,7 +48,7 @@ namespace Holidays
                                 req.EmployeeName, req.From.ToShortDateString(), req.To.ToShortDateString());
             var body = "Please accept/reject the request";
 
-            Notifier.Notify(req.EmployeeEmail, req.ManagerEmail, subject, body);
+            notifier.Notify(req.EmployeeEmail, req.ManagerEmail, subject, body);
         }
 
     }

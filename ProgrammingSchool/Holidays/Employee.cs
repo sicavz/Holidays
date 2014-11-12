@@ -1,13 +1,21 @@
 ﻿using System;
+using Holidays.Interfaces;
 
 namespace Holidays
 {
     public class Employee
     {
-        public string Name;
-        public string Email;
+        public Employee(ICompany company, string name, string email)
+        {
+            Company = company;
+            Name = name;
+            Email = email;
+        }
 
-        public Company Company;
+        public string Name { private set; get; }
+        public string Email { private set; get; }
+
+        public ICompany Company { private set; get; }
         public Manager Manager;
 
         public HolidayRequest AskForHoliday(DateTime from, DateTime to)

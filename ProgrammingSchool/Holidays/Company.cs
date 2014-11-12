@@ -2,17 +2,18 @@
 
 namespace Holidays
 {
-    public class Company
+    public class Company: ICompany
     {
-        public INotifyPolicy NotifyPolicy;
+        private readonly IHolidaysProcess holidaysProcess;
+
+        public Company(IHolidaysProcess holidaysProcess)
+        {
+            this.holidaysProcess = holidaysProcess;
+        }
 
         public IHolidaysProcess GetHolidaysProcess()
         {
-            return new HolidaysProcess
-            {
-                HREmailAddress = "hr@company.com",
-                Notifier = NotifyPolicy.CreateNotifier()
-            };
+            return holidaysProcess;
         }
     }
 }

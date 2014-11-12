@@ -45,6 +45,7 @@
     <Compile Include="Employee.cs" />
     <Compile Include="HolidayRequest.cs" />
     <Compile Include="HolidaysProcess.cs" />
+    <Compile Include="Interfaces\ICompany.cs" />
     <Compile Include="Interfaces\IHolidaysProcess.cs" />
     <Compile Include="Interfaces\INotifier.cs" />
     <Compile Include="Interfaces\INotifyPolicy.cs" />

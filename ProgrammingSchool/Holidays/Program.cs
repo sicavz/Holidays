@@ -7,24 +7,15 @@ namespace Holidays
     {
         static void Main()
         {
-            var company = new Company
-            {
-                NotifyPolicy = new ConsoleNotifyPolicy()
-                //NotifyPolicy = new SmtpNotifyPolicy()
-            };
+            var company = new Company(new HolidaysProcess(new ConsoleNotifyPolicy()) //SmtpNotifyPolicy()
+                {
+                    HREmailAddress = "hr@company.com"
+                }
+            );
 
-            var manager = new Manager
+            var manager = new Manager(company, "Manager", "manager@company.com");
+            var employee = new Employee(company, "Employee", "employee@company.com")
             {
-                Name = "Manager",
-                Email = "manager@company.com",
-                Company = company
-            };
-
-            var employee = new Employee
-            {
-                Name = "Employee",
-                Email = "employee@company.com",
-                Company = company,
                 Manager = manager
             };
 
