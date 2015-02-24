@@ -3,15 +3,19 @@ using Holidays.Interfaces;
 
 namespace Holidays.Notifiers
 {
-    public class ConsoleNotifier : INotifier
+    public class ConsoleNotifier : IHolidayRequestConsumer
     {
-        public void Notify(string sender, string receiver, string subject, string body)
+        private readonly IRequestRenderer<string> requestRenderer;
+
+        public ConsoleNotifier(IRequestRenderer<string> requestRenderer)
         {
-            Console.WriteLine("Email sent");
-            Console.WriteLine("\tFrom    : {0}", sender);
-            Console.WriteLine("\tTo      : {0}", receiver);
-            Console.WriteLine("\tSubject : {0}", subject);
-            Console.WriteLine("\tBody    : {0}", body);
+            this.requestRenderer = requestRenderer;
+        }
+
+        public void Consume(HolidayRequest request)
+        {
+            var renderedRequest = requestRenderer.RenderRequest(request);
+            Console.WriteLine(renderedRequest);
             Console.WriteLine();
         }
     }

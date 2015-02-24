@@ -1,55 +1,58 @@
 using System;
+using System.Collections.Generic;
 using Holidays.Interfaces;
 
 namespace Holidays
 {
     public class HolidaysProcess: IHolidaysProcess
     {
-        private readonly INotifier notifier;
+        private readonly List<IHolidayRequestConsumer> requestConsumers;
 
-        public HolidaysProcess(INotifyPolicy notifyPolicy)
+        public HolidaysProcess()
         {
-            notifier = notifyPolicy.CreateNotifier();
+            requestConsumers = new List<IHolidayRequestConsumer>();
         }
 
         public string HREmailAddress;
 
-        public void RegisterHolidayRequest(HolidayRequest request)
+        public void RegisterRequestsConsumer(IHolidayRequestConsumer consumer)
         {
-            request.Submitted += OnRequestSubmitted;
-            request.Accepted += OnRequestAccepted;
-            request.Rejected += OnRequestRejected;
+            requestConsumers.Add(consumer);
         }
 
-        private void OnRequestRejected(object r, EventArgs e)
+        public void UnregisterRequestsConsumer(IHolidayRequestConsumer consumer)
         {
-            var req = (HolidayRequest) r;
-            var subject = string.Format("{0} rejected your holiday request btw [{1} - {2}]", 
-                                req.ManagerName, req.From.ToShortDateString(), req.To.ToShortDateString());
-            var body = "";
-
-            notifier.Notify(req.ManagerEmail, req.EmployeeEmail, subject, body);
+            if (!requestConsumers.Remove(consumer))
+                throw new Exception("Trying to un-register an unknown consumer!");
         }
 
-        private void OnRequestAccepted(object r, EventArgs e)
+        public HolidayRequest SubmitRequest(HolidayRequest request)
         {
-            var req = (HolidayRequest) r;
-            var subject = string.Format("{0} approved a holiday for {1} btw [{2} - {3}]", 
-                                req.ManagerName, req.EmployeeName, req.From.ToShortDateString(), req.To.ToShortDateString());
-            var body = "";
-
-            notifier.Notify(req.ManagerEmail, HREmailAddress, subject, body);
+            request.State = RequestState.Submitted;
+            SendToConsumers(request);
+            return request;
         }
 
-        private void OnRequestSubmitted(object r, EventArgs e)
+        public HolidayRequest RejectRequest(HolidayRequest request)
         {
-            var req = (HolidayRequest) r;
-            var subject = string.Format("{0} asked a holiday for [{1} - {2}]", 
-                                req.EmployeeName, req.From.ToShortDateString(), req.To.ToShortDateString());
-            var body = "Please accept/reject the request";
-
-            notifier.Notify(req.EmployeeEmail, req.ManagerEmail, subject, body);
+            request.State = RequestState.Rejected;
+            SendToConsumers(request);
+            return request;
         }
 
+        public HolidayRequest ApproveRequest(HolidayRequest request)
+        {
+            request.State = RequestState.Approved;
+            SendToConsumers(request);
+            return request;
+        }
+
+        private void SendToConsumers(HolidayRequest request)
+        {
+            foreach (var consumer in requestConsumers)
+            {
+                consumer.Consume(request);
+            }
+        }
     }
 }

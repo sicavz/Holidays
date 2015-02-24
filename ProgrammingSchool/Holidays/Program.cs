@@ -1,5 +1,6 @@
 ﻿using System;
-using Holidays.NotifyPolicies;
+using Holidays.Notifiers;
+using Holidays.Renderers;
 
 namespace Holidays
 {
@@ -7,21 +8,24 @@ namespace Holidays
     {
         static void Main()
         {
-            var company = new Company(new HolidaysProcess(new ConsoleNotifyPolicy()) //SmtpNotifyPolicy()
-                {
-                    HREmailAddress = "hr@company.com"
-                }
-            );
+            //wire-up
+            var holidayProcess = new HolidaysProcess { HREmailAddress = "hr@company.com" };
 
-            var manager = new Manager(company, "Manager", "manager@company.com");
-            var employee = new Employee(company, "Employee", "employee@company.com")
-            {
-                Manager = manager
-            };
+            var consoleNotifier = new ConsoleNotifier(new SimpleTextRenderer());
+            var smtpNotifier = new SmtpNotifier(new MailMessageRenderer(holidayProcess.HREmailAddress));
 
-            var holidayRequest = employee.AskForHoliday(new DateTime(2014, 11, 25), new DateTime(2014, 11, 28));
-            manager.ApproveHoliday(holidayRequest);
-            manager.RejectHoliday(holidayRequest);
+            holidayProcess.RegisterRequestsConsumer(consoleNotifier);
+            holidayProcess.RegisterRequestsConsumer(smtpNotifier);
+
+            //start using
+            var employee = new Employee("Employee", "employee@company.com");
+            var manager = new Employee("Manager", "manager@company.com");
+
+            var holidayRequest = new HolidayRequest(employee, new DateTime(2014, 11, 25), new DateTime(2014, 11, 28), manager);
+
+            holidayProcess.SubmitRequest(holidayRequest);
+            holidayProcess.ApproveRequest(holidayRequest);
+            holidayProcess.RejectRequest(holidayRequest);
         }
     }
 }

@@ -41,19 +41,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Company.cs" />
     <Compile Include="Employee.cs" />
     <Compile Include="HolidayRequest.cs" />
     <Compile Include="HolidaysProcess.cs" />
-    <Compile Include="Interfaces\ICompany.cs" />
     <Compile Include="Interfaces\IHolidaysProcess.cs" />
-    <Compile Include="Interfaces\INotifier.cs" />
-    <Compile Include="Interfaces\INotifyPolicy.cs" />
-    <Compile Include="Manager.cs" />
+    <Compile Include="Interfaces\IHolidayRequestConsumer.cs" />
     <Compile Include="Notifiers\ConsoleNotifier.cs" />
+    <Compile Include="Renderers\BaseRequestRenderer.cs" />
+    <Compile Include="Renderers\SimpleTextRenderer.cs" />
+    <Compile Include="Interfaces\IRequestRenderer.cs" />
     <Compile Include="Notifiers\SmtpNotifier.cs" />
-    <Compile Include="NotifyPolicies\ConsoleNotifyPolicy.cs" />
-    <Compile Include="NotifyPolicies\SmtpNotifyPolicy.cs" />
+    <Compile Include="Renderers\MailMessageRenderer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
