@@ -1,4 +1,7 @@
-﻿
+/*
+some comment
+*/
+
 namespace Holidays
 {
     public class Employee
